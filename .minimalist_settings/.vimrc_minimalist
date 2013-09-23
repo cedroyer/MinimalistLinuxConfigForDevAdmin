@@ -1,0 +1,40 @@
+filetype plugin on
+filetype indent on
+syntax enable
+
+set backspace=start,eol,indent " allow backspace to do what you want
+set tabstop=4 " 4 space for a tab
+set showmatch " highlight corresponding ")}'. you can add :set closepunct= for modify characters
+set hlsearch  " highlight search
+set nocompatible " enable many usefull freature
+
+" bash like command file completion
+set wildmode=longest:list " ,full
+set wildmenu
+
+" some usefull commands list
+function! UsefullCommands()
+    echo " "
+    echo "My Selected Usefull commands:"
+    echo " "
+    echo ":set (no)ic : scearch (don't) ingore ignore case"
+    echo ":set (no)list : print hidden charater (endline..)"
+    echo ":set (no)nu : add line number"
+    echo ":f : file info"
+    echo ""
+endfunction
+command UsefullCommands call UsefullCommands()
+
+" some usefull keystroks
+function! UsefullKeyStroks()
+    echo " "
+    echo "My Selected Usefull keystroks:"
+    echo " "
+    echo "\"ayy : copy named buffer"
+    echo "\"add : cut named buffer"
+    echo "\"ap : paste named buffer"
+    echo ""
+endfunction
+command UsefullKeyStroks call UsefullKeyStroks()
+
+nnoremap <tab> :tabnext<return>
