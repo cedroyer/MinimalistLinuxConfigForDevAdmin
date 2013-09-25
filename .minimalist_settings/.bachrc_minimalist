@@ -1,0 +1,67 @@
+
+if echo $PATH | grep "[^:]~/bin[$:]"
+then
+else
+  export PATH=~/bin:$PATH
+fi
+export EDITOR=vim
+export LANG='fr_FR.UTF-8'
+
+ROUGE="\\[^[[31m\\]"
+VERT="\\[^[[32m\\]"
+OFF="\\[^[[m\\]"
+
+function getBranch
+{
+    BGROUGE="^[[41m"
+    BLANC="^[[37m"
+    VERT="^[[32m"
+    COFF="^[[m"
+
+    BRANCH=$(git branch 2>/dev/null | grep '*')
+    if [ -n "$BRANCH" ]
+    then
+        BRANCH=${BRANCH#\* }
+        DEFAULT_COLOR=$COFF
+        if [[ "$BRANCH" = 'master' ]]
+        then
+            echo -n "$BGROUGE$BLANC"
+            DEFAULT_COLOR=$BGROUGE$BLANC
+        fi
+        SUFFIX=$(git st | sed -n -e's/^# Your branch is ahead of '"'\([^']*\)'"' by \([0-9]*\) commits\{0,1\}\.$/+\2/p'\
+        -e's/^# Your branch is behind '"'\([^']*\)'"' by \([0-9]*\) commits\{0,1\}\(, and can be \(fast-forwarded\)\.\|.*\)/-\2 \4/;s/fast-forwarded/'$VERT'ff'$DEFAULT_COLOR'/p'\
+        -e's/^# and have \([0-9]*\) and \([0-9]*\) different commit(s) each, respectively.$/+\1-\2/p')
+        STASH=$(git stash list | wc -l)
+        if [ "$STASH" == "0" ]
+        then
+            STASH=""
+        else
+            STASH="^${STASH}s"
+        fi
+        echo -n "[${BRANCH}${SUFFIX}]$STASH"
+    fi
+}
+
+function colorExecCode
+{
+    EXEC_CODE=$1
+    COLOR_OK=$2
+    COLOR_KO=$3
+    if [[ $EXEC_CODE = 0 ]]
+    then
+        echo -n ${COLOR_OK}
+        #${EXEC_CODE}${OFF}
+    else
+        echo -n ${COLOR_KO}
+        #${EXEC_CODE}${OFF}
+    fi
+    return $EXEC_CODE
+}
+
+export PS1='($(colorExecCode $? '$VERT' '$ROUGE')$?'$OFF',\t)|'$ROUGE'\u'$OFF'@\h:\w $(getBranch)'$OFF' \n'$ROUGE'(\\$) '$OFF
+
+#TODO treat color use: tput colors (return the number of available colors)
+alias ls="ls --color"
+alias ll='ls -l'
+alias lla='ls -la'
+alias vbashrc="vi $HOME/.bashrc"
